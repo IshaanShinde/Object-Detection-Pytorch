@@ -1,0 +1,13 @@
+# BDD100K Dataset Configuration for YOLOv5
+# Paths are relative to the yolov5/ directory (adjust if running from repo root)
+
+train: C:/Users/HP/OneDrive/Dokumen/GitHub/Traffic_Management_RT/data/images/train/      # Path to training images
+val:  C:/Users/HP/OneDrive/Dokumen/GitHub/Traffic_Management_RT/data/images/val/         # Path to validation images
+# test: ../data/images/test/      # Optional: uncomment if you have a test set
+
+nc: 4                            # Number of classes (matches CLASS_MAP)
+names:                            # Class names in order of class IDs
+  - car
+  - person
+  - bicycle
+  - truck
