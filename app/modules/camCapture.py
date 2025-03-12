@@ -9,20 +9,21 @@ class CameraModule:
     A cross-platform camera module that captures frames for object detection.
     Works on laptop, mobile, or other devices with a camera.
     """
-    def __init__(self, camera_id: int = 0, img_size: Tuple[int, int] = (640, 640)):
+    def __init__(self, camera_id: int = 0, img_size: Optional[Tuple[int, int]] = None):
         """
         Initialize the camera module.
         
         Args:
             camera_id: Camera device ID (default: 0 for primary camera)
-            img_size: Output image dimensions as (width, height)
+            img_size: Output image dimensions as (width, height), None for native resolution
         """
         self.camera_id = camera_id
         self.img_size = img_size
         self.camera = None
         self.is_running = False
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        
+
+            
     def check_camera(self) -> bool:
         """Check if the specified camera is available."""
         try:
@@ -64,13 +65,20 @@ class CameraModule:
             
         self.camera = cv2.VideoCapture(self.camera_id)
         
-        # Set resolution
-        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.img_size[0])
-        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.img_size[1])
+        # Get native camera resolution instead of setting it
+        if self.img_size is None:  # Only if we want to use native resolution
+            self.img_size = (
+                int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            )
+        else:
+            # Set resolution only if explicitly specified
+            self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.img_size[0])
+            self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.img_size[1])
         
         self.is_running = self.camera.isOpened()
         return self.is_running
-        
+
     def get_frame(self) -> Optional[torch.Tensor]:
         """
         Capture a frame from the camera and convert to PyTorch tensor.
