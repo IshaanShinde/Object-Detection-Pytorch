@@ -1,6 +1,6 @@
 import torch
 import torchvision.transforms as T
-from typing import Tuple, Dict, Any, Union
+from typing import Tuple, Dict, Any
 
 class ImageProcessor:
     """

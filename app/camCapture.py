@@ -9,7 +9,7 @@ class CameraModule:
     A cross-platform camera module that captures frames for object detection.
     Works on laptop, mobile, or other devices with a camera.
     """
-    def __init__(self, camera_id: int = 0, img_size: Tuple[int, int] = (640, 480)):
+    def __init__(self, camera_id: int = 0, img_size: Tuple[int, int] = (640, 640)):
         """
         Initialize the camera module.
         
