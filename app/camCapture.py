@@ -1,6 +1,6 @@
 import cv2
 import torch
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 import platform
 import time
 
@@ -9,7 +9,7 @@ class CameraModule:
     A cross-platform camera module that captures frames for object detection.
     Works on laptop, mobile, or other devices with a camera.
     """
-    def __init__(self, camera_id: int = 0, img_size: Tuple[int, int] = (640, 640)):
+    def __init__(self, camera_id: int = 0, img_size: Tuple[int, int] = (640, 480)):
         """
         Initialize the camera module.
         
@@ -112,20 +112,3 @@ class CameraModule:
     def __del__(self):
         """Ensure camera resources are released."""
         self.stop()
-
-# Example usage
-if __name__ == "__main__":
-    camera = CameraModule(img_size=(640, 640))
-    
-    if not camera.check_camera():
-        print(f"No camera found. Available cameras: {camera.get_available_cameras()}")
-    else:
-        try:
-            # Capture 10 frames (in a real app, you'd continuously process frames)
-            for i in range(5):
-                frame = camera.get_frame()
-                if frame is not None:
-                    print(f"Frame captured: {frame.shape}")
-                time.sleep(0.1)
-        finally:
-            camera.stop()
