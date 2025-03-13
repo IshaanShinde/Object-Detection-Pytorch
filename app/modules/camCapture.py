@@ -5,18 +5,14 @@ import platform
 import time
 
 class CameraModule:
-    """
-    A cross-platform camera module that captures frames for object detection.
-    Works on laptop, mobile, or other devices with a camera.
-    """
+    
+    #cross-platform camera module that captures frames for object detection.
+    
+    # init camera module
+    #    camera_id: Camera device ID (default: 0 for primary camera)
+    #    img_size: Output image dimensions as (width, height), None for native resolution
     def __init__(self, camera_id: int = 0, img_size: Optional[Tuple[int, int]] = None):
-        """
-        Initialize the camera module.
         
-        Args:
-            camera_id: Camera device ID (default: 0 for primary camera)
-            img_size: Output image dimensions as (width, height), None for native resolution
-        """
         self.camera_id = camera_id
         self.img_size = img_size
         self.camera = None
@@ -24,8 +20,8 @@ class CameraModule:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
             
+    # check if camera is available
     def check_camera(self) -> bool:
-        """Check if the specified camera is available."""
         try:
             cap = cv2.VideoCapture(self.camera_id)
             if not cap.isOpened():
@@ -35,14 +31,15 @@ class CameraModule:
         except Exception:
             return False
             
+    # get available cameras
     def get_available_cameras(self) -> list:
         """Detect available camera devices on the system."""
         available_cameras = []
         
-        # Different max camera check based on platform
+        # different max camera check based on platform
         max_to_check = 1
         if platform.system() == 'Windows' or platform.system() == 'Linux':
-            max_to_check = 5  # Check more cameras on desktop systems
+            max_to_check = 5  # check more cameras on desktop systems
             
         for i in range(max_to_check):
             cap = cv2.VideoCapture(i)
@@ -52,8 +49,8 @@ class CameraModule:
                 
         return available_cameras
             
+    # start camera capture
     def start(self) -> bool:
-        """Start the camera capture."""
         if self.is_running:
             return True
             
@@ -61,31 +58,29 @@ class CameraModule:
             available = self.get_available_cameras()
             if not available:
                 return False
-            self.camera_id = available[0]  # Use first available camera
+            self.camera_id = available[0]  # use first available camera
             
         self.camera = cv2.VideoCapture(self.camera_id)
         
         # Get native camera resolution instead of setting it
-        if self.img_size is None:  # Only if we want to use native resolution
+        if self.img_size is None:  # only if we want to use native resolution
             self.img_size = (
                 int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)),
                 int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
             )
         else:
-            # Set resolution only if explicitly specified
+            # set resolution only if explicitly specified
             self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.img_size[0])
             self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.img_size[1])
         
         self.is_running = self.camera.isOpened()
         return self.is_running
 
+    # capture a frame from the camera and convert to PyTorch tensor
     def get_frame(self) -> Optional[torch.Tensor]:
-        """
-        Capture a frame from the camera and convert to PyTorch tensor.
+    #   returns:
+    #       tensor of shape [3, height, width] or None if capture failed
         
-        Returns:
-            Tensor of shape [3, height, width] or None if capture failed
-        """
         if not self.is_running:
             if not self.start():
                 return None
